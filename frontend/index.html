@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Task Tracker</title>
+</head>
+<body>
+  <h1>Intern Task Tracker</h1>
+
+  <input id="taskInput" type="text" placeholder="Enter a task" />
+  <button onclick="addTask()">Submit</button>
+
+  <ul id="taskList"></ul>
+
+  <script>
+    const API_URL = 'http://localhost:3000/tasks';
+
+    // Fetch existing tasks on load
+    window.onload = () => {
+      fetch(API_URL)
+        .then(res => res.json())
+        .then(data => {
+          const taskList = document.getElementById('taskList');
+          data.forEach(task => {
+            const li = document.createElement('li');
+            li.textContent = `${task.text} [${task.done ? 'Done' : 'Pending'}]`;
+            taskList.appendChild(li);
+          });
+        });
+    };
+
+    function addTask() {
+      const input = document.getElementById('taskInput');
+      const text = input.value;
+
+      fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text })
+      })
+      .then(res => res.json())
+      .then(task => {
+        const li = document.createElement('li');
+        li.textContent = `${task.text} [Pending]`;
+        document.getElementById('taskList').appendChild(li);
+        input.value = '';
+      });
+    }
+  </script>
+</body>
+</html>
